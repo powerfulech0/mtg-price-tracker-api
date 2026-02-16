@@ -1,18 +1,16 @@
-# Tasks API - Secure CRUD Application
+# MTG Card Price Tracker API
 
-A production-ready Tasks/Todos CRUD API built with Node.js, Express, PostgreSQL, and Docker. Features comprehensive security implementations including input validation, rate limiting, SQL injection prevention, and XSS protection.
-
-**NEW:** MTG Card Price History Tracking - Track Magic: The Gathering card prices with Scryfall API integration!
+A production-ready Magic: The Gathering card price tracking API built with Node.js, Express, PostgreSQL, and Docker. Features Scryfall API integration, comprehensive security implementations including input validation, rate limiting, SQL injection prevention, and XSS protection.
 
 ## Features
 
-- **CRUD Operations**: Complete Create, Read, Update, Delete functionality for tasks
 - **MTG Price Tracking**:
   - Fetch current card prices from Scryfall API
   - Track historical price data
   - Price statistics (average, min, max)
   - Support for multiple price sources (Scryfall, TCGPlayer, manual)
-- **Advanced Filtering**: Filter by status, priority, price source, date ranges with pagination support
+  - Case-insensitive card name searches
+- **Advanced Filtering**: Filter by price source, date ranges with pagination support
 - **Security-First Design**:
   - Input validation & sanitization (XSS prevention)
   - Rate limiting (DDoS protection)
@@ -38,7 +36,7 @@ A production-ready Tasks/Todos CRUD API built with Node.js, Express, PostgreSQL,
 ## Project Structure
 
 ```
-tasks-api/
+mtg-price-tracker-api/
 ├── src/
 │   ├── server.js              # Entry point
 │   ├── app.js                 # Express configuration
@@ -46,23 +44,24 @@ tasks-api/
 │   │   ├── database.js        # PostgreSQL connection
 │   │   └── security.js        # Security configurations
 │   ├── routes/                # API routes
-│   │   ├── tasks.js           # Tasks endpoints
+│   │   ├── index.js           # Route aggregator
 │   │   └── mtg.js             # MTG card price endpoints
 │   ├── controllers/           # Business logic
-│   │   ├── tasks.controller.js
 │   │   └── mtg.controller.js
 │   ├── models/                # Data access layer
-│   │   ├── tasks.model.js
 │   │   └── mtg.model.js
 │   ├── services/              # External API integrations
 │   │   └── scryfall.service.js
 │   ├── middleware/            # Custom middleware
+│   │   ├── errorHandler.js
+│   │   ├── rateLimiter.js
+│   │   └── validation.js
 │   ├── validators/            # Input validation
-│   │   ├── tasks.validator.js
 │   │   └── mtg.validator.js
 │   └── utils/                 # Utilities
+│       └── logger.js
 ├── db/
-│   └── init.sql               # Database schema (tasks + MTG tables)
+│   └── init.sql               # Database schema (MTG tables)
 ├── tests/
 │   └── integration/           # API tests
 ├── Dockerfile                 # Multi-stage build
@@ -80,7 +79,8 @@ tasks-api/
 
 1. **Clone the repository**:
 ```bash
-cd /home/grearden/Development/tasks-api
+git clone https://github.com/powerfulech0/mtg-price-tracker-api.git
+cd mtg-price-tracker-api
 ```
 
 2. **Configure environment variables**:
@@ -115,135 +115,6 @@ Expected response:
 ```
 http://localhost:3000/api/v1
 ```
-
-### Endpoints
-
-#### 1. Get All Tasks
-```http
-GET /api/v1/tasks
-```
-
-**Query Parameters**:
-- `status` (optional): `pending` | `in_progress` | `completed`
-- `priority` (optional): `low` | `medium` | `high`
-- `page` (optional): Page number (default: 1)
-- `limit` (optional): Items per page (default: 10, max: 100)
-
-**Example**:
-```bash
-curl "http://localhost:3000/api/v1/tasks?status=pending&priority=high&page=1&limit=10"
-```
-
-**Response**:
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "title": "Setup development environment",
-      "description": "Install Node.js, PostgreSQL, and Docker",
-      "status": "completed",
-      "priority": "high",
-      "due_date": "2026-02-10T10:00:00.000Z",
-      "created_at": "2026-02-16T12:00:00.000Z",
-      "updated_at": "2026-02-16T12:00:00.000Z"
-    }
-  ],
-  "metadata": {
-    "page": 1,
-    "limit": 10,
-    "total": 50,
-    "totalPages": 5
-  }
-}
-```
-
-#### 2. Get Task by ID
-```http
-GET /api/v1/tasks/:id
-```
-
-**Example**:
-```bash
-curl http://localhost:3000/api/v1/tasks/1
-```
-
-#### 3. Create Task
-```http
-POST /api/v1/tasks
-```
-
-**Body**:
-```json
-{
-  "title": "New Task",
-  "description": "Task description",
-  "status": "pending",
-  "priority": "medium",
-  "due_date": "2026-03-01T10:00:00Z"
-}
-```
-
-**Example**:
-```bash
-curl -X POST http://localhost:3000/api/v1/tasks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Complete project documentation",
-    "description": "Write comprehensive README and API docs",
-    "status": "pending",
-    "priority": "high",
-    "due_date": "2026-03-01T10:00:00Z"
-  }'
-```
-
-#### 4. Update Task (Full)
-```http
-PUT /api/v1/tasks/:id
-```
-
-**Body**: All fields required
-```json
-{
-  "title": "Updated Task",
-  "description": "Updated description",
-  "status": "in_progress",
-  "priority": "high",
-  "due_date": "2026-03-01T10:00:00Z"
-}
-```
-
-#### 5. Update Task (Partial)
-```http
-PATCH /api/v1/tasks/:id
-```
-
-**Body**: At least one field required
-```json
-{
-  "status": "completed"
-}
-```
-
-**Example**:
-```bash
-curl -X PATCH http://localhost:3000/api/v1/tasks/1 \
-  -H "Content-Type: application/json" \
-  -d '{"status": "completed"}'
-```
-
-#### 6. Delete Task
-```http
-DELETE /api/v1/tasks/:id
-```
-
-**Example**:
-```bash
-curl -X DELETE http://localhost:3000/api/v1/tasks/1
-```
-
----
 
 ## MTG Card Price Tracking API
 
@@ -443,29 +314,13 @@ curl "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/prices?source=scry
 }
 ```
 
-### MTG Validation Rules
+### Validation Rules
 
 - **cardName**: 1-255 characters, auto-sanitized to prevent XSS
 - **price**: 0.00 - 999999.99, required for price recording
 - **source**: `scryfall` | `tcgplayer` | `manual` (default: manual)
 - **recorded_at**: ISO 8601 format, cannot be in the future, optional (defaults to current time)
 - **autoRecord**: boolean, optional (default: false)
-
-### MTG Rate Limiting
-
-- **Scryfall API requests**: 8 requests per second (fetch-price endpoint)
-- **Standard mutation limits**: 50 requests / 15 minutes per IP
-- **General API limits**: 100 requests / 15 minutes per IP
-
----
-
-### Validation Rules
-
-- **title**: 1-255 characters, required
-- **description**: Max 5000 characters, optional
-- **status**: `pending` | `in_progress` | `completed`
-- **priority**: `low` | `medium` | `high`
-- **due_date**: ISO 8601 format, optional
 
 ## Security Features
 
@@ -537,9 +392,9 @@ psql -U postgres -f db/init.sql
 ```env
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=tasks_user
+DB_USER=mtg_user
 DB_PASSWORD=your_password
-DB_NAME=tasks_db
+DB_NAME=mtg_db
 ```
 
 4. **Install dependencies**:
@@ -575,7 +430,7 @@ docker compose down -v
 
 ### Access PostgreSQL CLI
 ```bash
-docker exec -it tasks_api_db psql -U tasks_user -d tasks_db
+docker exec -it mtg_api_db psql -U mtg_user -d mtg_db
 ```
 
 ### Useful Commands
@@ -583,15 +438,9 @@ docker exec -it tasks_api_db psql -U tasks_user -d tasks_db
 -- View all tables
 \dt
 
--- Describe tasks table
-\d tasks
-
 -- Describe MTG tables
 \d mtg_cards
 \d mtg_price_history
-
--- View all tasks
-SELECT * FROM tasks;
 
 -- View all MTG cards with latest prices
 SELECT
@@ -617,8 +466,16 @@ SELECT
 FROM mtg_price_history
 WHERE card_id = 1;
 
--- Count tasks by status
-SELECT status, COUNT(*) FROM tasks GROUP BY status;
+-- Get price history for a specific card
+SELECT
+  c.card_name,
+  p.price,
+  p.source,
+  p.recorded_at
+FROM mtg_cards c
+JOIN mtg_price_history p ON c.id = p.card_id
+WHERE LOWER(c.card_name) = LOWER('Lightning Bolt')
+ORDER BY p.recorded_at DESC;
 ```
 
 ## Environment Variables
@@ -629,9 +486,9 @@ SELECT status, COUNT(*) FROM tasks GROUP BY status;
 | PORT | Server port | 3000 |
 | DB_HOST | Database host | postgres |
 | DB_PORT | Database port | 5432 |
-| DB_USER | Database user | tasks_user |
+| DB_USER | Database user | mtg_user |
 | DB_PASSWORD | Database password | (required) |
-| DB_NAME | Database name | tasks_db |
+| DB_NAME | Database name | mtg_db |
 | RATE_LIMIT_WINDOW_MS | Rate limit window | 900000 (15 min) |
 | RATE_LIMIT_MAX_REQUESTS | Max requests | 100 |
 | RATE_LIMIT_MUTATION_MAX | Max mutations | 50 |
@@ -643,27 +500,27 @@ SELECT status, COUNT(*) FROM tasks GROUP BY status;
 ```bash
 # Send 150 requests rapidly
 for i in {1..150}; do
-  curl http://localhost:3000/api/v1/tasks &
+  curl http://localhost:3000/api/v1/mtg/cards &
 done
 ```
 
 ### Test SQL Injection Prevention
 ```bash
-curl -X POST http://localhost:3000/api/v1/tasks \
+curl -X POST "http://localhost:3000/api/v1/mtg/cards/Test'; DROP TABLE mtg_cards;--/prices" \
   -H "Content-Type: application/json" \
-  -d '{"title": "Test OR 1=1--", "description": "DROP TABLE tasks--"}'
+  -d '{"price": 1.00, "source": "manual"}'
 ```
 
 ### Test XSS Sanitization
 ```bash
-curl -X POST http://localhost:3000/api/v1/tasks \
+curl -X POST "http://localhost:3000/api/v1/mtg/cards/<script>alert('XSS')</script>/prices" \
   -H "Content-Type: application/json" \
-  -d '{"title": "<script>alert(\"XSS\")</script>"}'
+  -d '{"price": 1.00, "source": "manual"}'
 ```
 
 ### Verify Security Headers
 ```bash
-curl -I http://localhost:3000/api/v1/tasks
+curl -I http://localhost:3000/api/v1/mtg/cards
 ```
 
 ### Test MTG Price Tracking
@@ -707,7 +564,7 @@ docker compose ps
 docker compose logs postgres
 
 # Test database connection
-docker compose exec postgres pg_isready -U tasks_user
+docker compose exec postgres pg_isready -U mtg_user
 ```
 
 ### Application Not Starting
@@ -729,7 +586,7 @@ lsof -ti:3000 | xargs kill -9
 
 ### Build Production Image
 ```bash
-docker build --target production -t tasks-api:latest .
+docker build --target production -t mtg-price-tracker-api:latest .
 ```
 
 ### Production Considerations

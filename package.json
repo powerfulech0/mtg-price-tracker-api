@@ -1,7 +1,7 @@
 {
-  "name": "tasks-api",
+  "name": "mtg-price-tracker-api",
   "version": "1.0.0",
-  "description": "Secure Tasks/Todos CRUD API with comprehensive security features",
+  "description": "MTG Card Price Tracking API with Scryfall integration and comprehensive security features",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -12,8 +12,11 @@
     "format": "prettier --write \"src/**/*.js\""
   },
   "keywords": [
+    "mtg",
+    "magic-the-gathering",
+    "card-price-tracker",
+    "scryfall",
     "api",
-    "crud",
     "security",
     "express",
     "postgresql"
