@@ -69,8 +69,23 @@ const healthCheckLimiter = rateLimit({
   handler: standardResponse,
 });
 
+/**
+ * Scryfall API Rate Limiter
+ * Protects against exceeding Scryfall API rate limits
+ * Scryfall allows ~10 requests per second, we limit to 8 for safety
+ */
+const scryfallLimiter = rateLimit({
+  windowMs: 1000, // 1 second
+  max: 8, // 8 requests per second
+  message: 'Too many requests to external card API. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: standardResponse,
+});
+
 module.exports = {
   generalLimiter,
   mutationLimiter,
   healthCheckLimiter,
+  scryfallLimiter,
 };
