@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.2.0...v1.3.0) (2026-02-25)
+
+
+### Features
+
+* Add API key authentication middleware ([#12](https://github.com/powerfulech0/mtg-price-tracker-api/issues/12)) ([d207d37](https://github.com/powerfulech0/mtg-price-tracker-api/commit/d207d370e234def663278d79430aee2347d9e127))
+
 ## [1.2.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.1.0...v1.2.0) (2026-02-25)
 
 
