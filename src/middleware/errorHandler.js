@@ -19,7 +19,7 @@ class AppError extends Error {
  * Centralized Error Handler Middleware
  * Handles all errors thrown in the application
  */
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   // Default to 500 Internal Server Error
   let statusCode = err.statusCode || 500;
   let errorCode = err.errorCode || 'INTERNAL_ERROR';
@@ -107,11 +107,7 @@ const errorHandler = (err, req, res, next) => {
  * Handles requests to undefined routes
  */
 const notFoundHandler = (req, res, next) => {
-  const error = new AppError(
-    `Cannot ${req.method} ${req.path}`,
-    404,
-    'ROUTE_NOT_FOUND'
-  );
+  const error = new AppError(`Cannot ${req.method} ${req.path}`, 404, 'ROUTE_NOT_FOUND');
   next(error);
 };
 

@@ -11,7 +11,7 @@ const standardResponse = (req, res) => {
   logger.warn('Rate limit exceeded', {
     ip: req.ip,
     path: req.path,
-    method: req.method
+    method: req.method,
   });
 
   res.status(429).json({

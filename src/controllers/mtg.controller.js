@@ -1,6 +1,6 @@
-const mtgModel = require("../models/mtg.model");
-const scryfallService = require("../services/scryfall.service");
-const { AppError } = require("../middleware/errorHandler");
+const mtgModel = require('../models/mtg.model');
+const scryfallService = require('../services/scryfall.service');
+const { AppError } = require('../middleware/errorHandler');
 
 /**
  * MTG Controller
@@ -14,7 +14,7 @@ const { AppError } = require("../middleware/errorHandler");
  */
 const recordCardPrice = async (req, res) => {
   const { cardName } = req.params;
-  const { price, source = "manual", recorded_at } = req.body;
+  const { price, source = 'manual', recorded_at } = req.body;
 
   // Check if card exists
   let card = await mtgModel.getCardByName(cardName);
@@ -43,7 +43,7 @@ const recordCardPrice = async (req, res) => {
       card,
       price_record: priceRecord,
     },
-    message: "Price recorded successfully",
+    message: 'Price recorded successfully',
   });
 };
 
@@ -78,7 +78,7 @@ const fetchCardPriceFromScryfall = async (req, res) => {
     const priceRecord = await mtgModel.createPriceRecord({
       card_id: card.id,
       price: priceData.price,
-      source: "scryfall",
+      source: 'scryfall',
       recorded_at: new Date(),
     });
 
@@ -95,9 +95,7 @@ const fetchCardPriceFromScryfall = async (req, res) => {
       saved: autoRecord,
       saved_data: savedData,
     },
-    message: autoRecord
-      ? "Price fetched and recorded successfully"
-      : "Price fetched successfully",
+    message: autoRecord ? 'Price fetched and recorded successfully' : 'Price fetched successfully',
   });
 };
 
@@ -113,7 +111,7 @@ const getPriceHistory = async (req, res) => {
   const card = await mtgModel.getCardByName(cardName);
 
   if (!card) {
-    throw new AppError("Card not found", 404, "CARD_NOT_FOUND");
+    throw new AppError('Card not found', 404, 'CARD_NOT_FOUND');
   }
 
   // Build filters object
@@ -156,12 +154,7 @@ const getPriceHistory = async (req, res) => {
  * GET /api/v1/mtg/cards
  */
 const getAllCards = async (req, res) => {
-  const {
-    page = 1,
-    limit = 10,
-    sort = "created_at",
-    order = "DESC",
-  } = req.query;
+  const { page = 1, limit = 10, sort = 'created_at', order = 'DESC' } = req.query;
 
   // Calculate pagination
   const offset = (page - 1) * limit;

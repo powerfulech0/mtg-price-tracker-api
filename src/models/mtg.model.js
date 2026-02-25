@@ -1,5 +1,4 @@
 const { query } = require('../config/database');
-const { AppError } = require('../middleware/errorHandler');
 
 /**
  * MTG Model
@@ -62,7 +61,13 @@ const getCardById = async (id) => {
  * @param {String} order - Sort order (ASC or DESC)
  * @returns {Promise<Array>} Array of cards with latest prices
  */
-const getAllCards = async (filters = {}, limit = 10, offset = 0, sortBy = 'created_at', order = 'DESC') => {
+const getAllCards = async (
+  _filters = {},
+  limit = 10,
+  offset = 0,
+  sortBy = 'created_at',
+  order = 'DESC'
+) => {
   // Validate sort field to prevent SQL injection
   const allowedSortFields = ['id', 'card_name', 'created_at', 'updated_at'];
   const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
@@ -118,12 +123,7 @@ const createPriceRecord = async (priceData) => {
     RETURNING *
   `;
 
-  const params = [
-    card_id,
-    price,
-    source || 'manual',
-    recorded_at || new Date(),
-  ];
+  const params = [card_id, price, source || 'manual', recorded_at || new Date()];
 
   const result = await query(queryText, params);
   return result.rows[0];

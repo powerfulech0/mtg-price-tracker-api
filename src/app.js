@@ -8,7 +8,6 @@ const { helmetConfig, corsConfig } = require('./config/security');
 const { generalLimiter, healthCheckLimiter } = require('./middleware/rateLimiter');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const apiRoutes = require('./routes');
-const logger = require('./utils/logger');
 const { version } = require('../package.json');
 
 /**

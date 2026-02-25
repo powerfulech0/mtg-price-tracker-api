@@ -27,7 +27,7 @@ async function rateLimit() {
 
   if (timeSinceLastRequest < RATE_LIMIT_DELAY) {
     const delay = RATE_LIMIT_DELAY - timeSinceLastRequest;
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   lastRequestTime = Date.now();
@@ -55,7 +55,7 @@ function getCached(key) {
 function setCache(key, data, ttl) {
   cache.set(key, {
     data,
-    expiresAt: Date.now() + ttl
+    expiresAt: Date.now() + ttl,
   });
 }
 
@@ -85,9 +85,9 @@ async function fetchCardByName(cardName) {
   try {
     const response = await axios.get(`${SCRYFALL_API_BASE}/cards/named`, {
       params: {
-        fuzzy: trimmedName
+        fuzzy: trimmedName,
       },
-      timeout: 10000 // 10 second timeout
+      timeout: 10000, // 10 second timeout
     });
 
     const cardData = response.data;
@@ -103,11 +103,7 @@ async function fetchCardByName(cardName) {
       const scryfallError = error.response.data;
 
       if (status === 404) {
-        throw new AppError(
-          `Card "${trimmedName}" not found`,
-          404,
-          'CARD_NOT_FOUND'
-        );
+        throw new AppError(`Card "${trimmedName}" not found`, 404, 'CARD_NOT_FOUND');
       }
 
       if (status === 429) {
@@ -127,19 +123,11 @@ async function fetchCardByName(cardName) {
 
     // Handle network errors
     if (error.code === 'ECONNABORTED') {
-      throw new AppError(
-        'Request to Scryfall API timed out',
-        504,
-        'SCRYFALL_TIMEOUT'
-      );
+      throw new AppError('Request to Scryfall API timed out', 504, 'SCRYFALL_TIMEOUT');
     }
 
     if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
-      throw new AppError(
-        'Unable to connect to Scryfall API',
-        503,
-        'SCRYFALL_UNAVAILABLE'
-      );
+      throw new AppError('Unable to connect to Scryfall API', 503, 'SCRYFALL_UNAVAILABLE');
     }
 
     // Re-throw AppErrors
@@ -179,11 +167,7 @@ async function getCardPrice(cardName) {
   const usdPrice = cardData.prices?.usd;
 
   if (!usdPrice) {
-    throw new AppError(
-      `Price not available for "${cardName}"`,
-      404,
-      'PRICE_NOT_AVAILABLE'
-    );
+    throw new AppError(`Price not available for "${cardName}"`, 404, 'PRICE_NOT_AVAILABLE');
   }
 
   const result = {
@@ -192,7 +176,7 @@ async function getCardPrice(cardName) {
     price: parseFloat(usdPrice),
     currency: 'USD',
     source: 'scryfall',
-    fetchedAt: new Date().toISOString()
+    fetchedAt: new Date().toISOString(),
   };
 
   // Cache the price
@@ -214,7 +198,7 @@ function clearCache() {
 function getCacheStats() {
   return {
     size: cache.size,
-    entries: Array.from(cache.keys())
+    entries: Array.from(cache.keys()),
   };
 }
 
@@ -222,5 +206,5 @@ module.exports = {
   fetchCardByName,
   getCardPrice,
   clearCache,
-  getCacheStats
+  getCacheStats,
 };
