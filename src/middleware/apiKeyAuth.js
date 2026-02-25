@@ -29,7 +29,7 @@ const apiKeyAuth = (req, res, next) => {
     throw new AppError('Server configuration error', 500);
   }
 
-  const isValid = validKeys.some(validKey => safeCompare(apiKey, validKey.trim()));
+  const isValid = validKeys.some((validKey) => safeCompare(apiKey, validKey.trim()));
 
   if (!isValid) {
     throw new AppError('Invalid API key', 401);
