@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.0.0...v1.1.0) (2026-02-25)
+
+
+### Features
+
+* Add ESLint and Prettier configuration ([#8](https://github.com/powerfulech0/mtg-price-tracker-api/issues/8)) ([68ebd11](https://github.com/powerfulech0/mtg-price-tracker-api/commit/68ebd119c15073daaf49341ea1ecc0ec7ead2c15))
+
 ## 1.0.0 (2026-02-25)
 
 
