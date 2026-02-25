@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Tasks API
+# Multi-stage Dockerfile for MTG Price Tracker API
 # Optimized for production with minimal image size
 
 # Stage 1: Base image with Node.js and dumb-init

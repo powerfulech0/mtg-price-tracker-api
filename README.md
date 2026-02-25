@@ -394,7 +394,7 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USER=mtg_user
 DB_PASSWORD=your_password
-DB_NAME=mtg_db
+DB_NAME=mtg_price_tracker
 ```
 
 4. **Install dependencies**:
@@ -430,7 +430,7 @@ docker compose down -v
 
 ### Access PostgreSQL CLI
 ```bash
-docker exec -it mtg_api_db psql -U mtg_user -d mtg_db
+docker exec -it mtg_price_tracker_api_db psql -U mtg_user -d mtg_price_tracker
 ```
 
 ### Useful Commands
@@ -488,7 +488,7 @@ ORDER BY p.recorded_at DESC;
 | DB_PORT | Database port | 5432 |
 | DB_USER | Database user | mtg_user |
 | DB_PASSWORD | Database password | (required) |
-| DB_NAME | Database name | mtg_db |
+| DB_NAME | Database name | mtg_price_tracker |
 | RATE_LIMIT_WINDOW_MS | Rate limit window | 900000 (15 min) |
 | RATE_LIMIT_MAX_REQUESTS | Max requests | 100 |
 | RATE_LIMIT_MUTATION_MAX | Max mutations | 50 |
