@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.1.0...v1.2.0) (2026-02-25)
+
+
+### Features
+
+* Add Docker image publishing to GHCR on release ([#10](https://github.com/powerfulech0/mtg-price-tracker-api/issues/10)) ([3d119ef](https://github.com/powerfulech0/mtg-price-tracker-api/commit/3d119ef121cb0fc434716ce79a5c253aa4a75db0))
+
 ## [1.1.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.0.0...v1.1.0) (2026-02-25)
 
 
