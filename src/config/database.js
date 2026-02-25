@@ -5,9 +5,9 @@ const logger = require('../utils/logger');
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT, 10) || 5432,
-  user: process.env.DB_USER || 'tasks_user',
+  user: process.env.DB_USER || 'mtg_user',
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME || 'tasks_db',
+  database: process.env.DB_NAME || 'mtg_price_tracker',
 
   // Connection pool settings
   max: 20, // Maximum number of clients in the pool

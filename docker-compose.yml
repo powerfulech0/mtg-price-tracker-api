@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database Service
   postgres:
     image: postgres:18.1-alpine
-    container_name: tasks_api_db
+    container_name: mtg_price_tracker_api_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -33,7 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: tasks_api_app
+    container_name: mtg_price_tracker_api_app
     restart: unless-stopped
     depends_on:
       postgres:
@@ -58,7 +56,11 @@ services:
       # Mount node_modules as volume to avoid overwriting
       - node_modules:/app/node_modules
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
