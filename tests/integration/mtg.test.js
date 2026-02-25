@@ -7,9 +7,16 @@ const { pool } = require('../../src/config/database');
  * Tests all MTG card price tracking operations
  */
 
+// Set test API key before importing app
+const TEST_API_KEY = 'test-api-key-12345';
+process.env.API_KEYS = TEST_API_KEY;
+
 describe('MTG Price Tracker API Integration Tests', () => {
   let testCardName = 'Lightning Bolt';
   let createdCardId;
+
+  // Helper to add API key header to requests
+  const authHeader = { 'X-API-Key': TEST_API_KEY };
 
   // Setup: Ensure clean database state before tests
   beforeAll(async () => {
@@ -48,6 +55,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should get all cards with pagination', async () => {
       const res = await request(app)
         .get('/api/v1/mtg/cards')
+        .set(authHeader)
         .query({ page: 1, limit: 10 })
         .expect(200);
 
@@ -62,6 +70,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should support sorting parameters', async () => {
       const res = await request(app)
         .get('/api/v1/mtg/cards')
+        .set(authHeader)
         .query({ sort: 'card_name', order: 'ASC' })
         .expect(200);
 
@@ -72,6 +81,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should reject invalid pagination parameters', async () => {
       const res = await request(app)
         .get('/api/v1/mtg/cards')
+        .set(authHeader)
         .query({ page: -1, limit: 200 })
         .expect(400);
 
@@ -90,6 +100,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
 
       const res = await request(app)
         .post(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .send(priceData)
         .expect('Content-Type', /json/)
         .expect(201);
@@ -108,6 +119,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should reject price without required price field', async () => {
       const res = await request(app)
         .post(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .send({ source: 'manual' })
         .expect(400);
 
@@ -118,6 +130,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should reject invalid price value', async () => {
       const res = await request(app)
         .post(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .send({ price: -5.00 })
         .expect(400);
 
@@ -128,6 +141,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should reject invalid source value', async () => {
       const res = await request(app)
         .post(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .send({ price: 1.99, source: 'invalid_source' })
         .expect(400);
 
@@ -141,6 +155,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should get price history for a card', async () => {
       const res = await request(app)
         .get(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .query({ page: 1, limit: 10 })
         .expect(200);
 
@@ -158,6 +173,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should filter by source', async () => {
       const res = await request(app)
         .get(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .query({ source: 'manual' })
         .expect(200);
 
@@ -173,6 +189,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
 
       const res = await request(app)
         .get(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .query({ start_date: startDate, end_date: endDate })
         .expect(200);
 
@@ -182,6 +199,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should return 404 for non-existent card', async () => {
       const res = await request(app)
         .get('/api/v1/mtg/cards/NonExistentCardXYZ123/prices')
+        .set(authHeader)
         .expect(404);
 
       expect(res.body.success).toBe(false);
@@ -191,6 +209,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should reject invalid pagination parameters', async () => {
       const res = await request(app)
         .get(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/prices`)
+        .set(authHeader)
         .query({ page: 0, limit: -5 })
         .expect(400);
 
@@ -204,6 +223,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should fetch price from Scryfall without auto-recording', async () => {
       const res = await request(app)
         .post(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/fetch-price`)
+        .set(authHeader)
         .send({ autoRecord: false })
         .expect(200);
 
@@ -216,6 +236,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should fetch price from Scryfall with auto-recording', async () => {
       const res = await request(app)
         .post(`/api/v1/mtg/cards/${encodeURIComponent(testCardName)}/fetch-price`)
+        .set(authHeader)
         .send({ autoRecord: true })
         .expect(200);
 
@@ -230,10 +251,51 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should handle non-existent card on Scryfall', async () => {
       const res = await request(app)
         .post('/api/v1/mtg/cards/CompletelyFakeCardXYZ999/fetch-price')
+        .set(authHeader)
         .send({ autoRecord: false })
         .expect(404);
 
       expect(res.body.success).toBe(false);
+    });
+  });
+
+  // API Key Authentication Tests
+  describe('API Key Authentication', () => {
+    it('should reject requests without API key', async () => {
+      const res = await request(app)
+        .get('/api/v1/mtg/cards')
+        .expect(401);
+
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.message).toBe('API key is required');
+    });
+
+    it('should reject requests with invalid API key', async () => {
+      const res = await request(app)
+        .get('/api/v1/mtg/cards')
+        .set({ 'X-API-Key': 'invalid-key' })
+        .expect(401);
+
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.message).toBe('Invalid API key');
+    });
+
+    it('should allow requests with valid API key', async () => {
+      const res = await request(app)
+        .get('/api/v1/mtg/cards')
+        .set(authHeader)
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+    });
+
+    it('should allow health check without API key', async () => {
+      const res = await request(app)
+        .get('/health')
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toBe('API is healthy');
     });
   });
 
@@ -252,6 +314,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
 
       const res = await request(app)
         .get(`/api/v1/mtg/cards/${encodeURIComponent(maliciousName)}/prices`)
+        .set(authHeader)
         .expect(404);
 
       // Should return 404 (card not found) not a database error
@@ -259,7 +322,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
       expect(res.body.error.code).toBe('CARD_NOT_FOUND');
 
       // Verify database is still intact
-      const cardsRes = await request(app).get('/api/v1/mtg/cards').expect(200);
+      const cardsRes = await request(app).get('/api/v1/mtg/cards').set(authHeader).expect(200);
       expect(cardsRes.body.success).toBe(true);
     });
   });
@@ -269,6 +332,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should return 404 for undefined routes', async () => {
       const res = await request(app)
         .get('/api/v1/nonexistent')
+        .set(authHeader)
         .expect(404);
 
       expect(res.body.success).toBe(false);
@@ -278,6 +342,7 @@ describe('MTG Price Tracker API Integration Tests', () => {
     it('should return 404 for non-MTG API routes', async () => {
       const res = await request(app)
         .get('/api/v1/tasks')
+        .set(authHeader)
         .expect(404);
 
       expect(res.body.success).toBe(false);

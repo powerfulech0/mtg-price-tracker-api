@@ -7,6 +7,7 @@ const compression = require('compression');
 const { helmetConfig, corsConfig } = require('./config/security');
 const { generalLimiter, healthCheckLimiter } = require('./middleware/rateLimiter');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const { apiKeyAuth } = require('./middleware/apiKeyAuth');
 const apiRoutes = require('./routes');
 const { version } = require('../package.json');
 
@@ -48,6 +49,9 @@ app.get('/health', healthCheckLimiter, (req, res) => {
 
 // Apply general rate limiter to all API routes
 app.use('/api', generalLimiter);
+
+// Apply API key authentication to all API routes
+app.use('/api', apiKeyAuth);
 
 // Mount API routes
 app.use('/api/v1', apiRoutes);
