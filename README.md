@@ -116,6 +116,26 @@ Expected response:
 http://localhost:3000/api/v1
 ```
 
+### Authentication
+
+All API endpoints under `/api/v1/*` require API key authentication. Include your API key in the `X-API-Key` header with every request.
+
+**Header Format**:
+```
+X-API-Key: your-api-key-here
+```
+
+**Example**:
+```bash
+curl -H "X-API-Key: your-api-key" http://localhost:3000/api/v1/mtg/cards
+```
+
+**Error Responses**:
+- `401 Unauthorized` - Missing API key: `{"success": false, "error": {"message": "API key is required"}}`
+- `401 Unauthorized` - Invalid API key: `{"success": false, "error": {"message": "Invalid API key"}}`
+
+**Note**: The `/health` endpoint does not require authentication and remains publicly accessible for load balancer health checks.
+
 ## MTG Card Price Tracking API
 
 Track Magic: The Gathering card prices with automatic Scryfall API integration.
@@ -135,7 +155,8 @@ GET /api/v1/mtg/cards
 
 **Example**:
 ```bash
-curl "http://localhost:3000/api/v1/mtg/cards?sort=card_name&order=ASC&limit=20"
+curl -H "X-API-Key: your-api-key" \
+  "http://localhost:3000/api/v1/mtg/cards?sort=card_name&order=ASC&limit=20"
 ```
 
 **Response**:
@@ -180,6 +201,7 @@ Fetches the current price from Scryfall API. Optionally saves to database.
 **Example**:
 ```bash
 curl -X POST "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/fetch-price" \
+  -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"autoRecord": true}'
 ```
@@ -226,6 +248,7 @@ Record a price manually or from other sources. Auto-creates card if it doesn't e
 **Example**:
 ```bash
 curl -X POST "http://localhost:3000/api/v1/mtg/cards/Black%20Lotus/prices" \
+  -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"price": 25000.00, "source": "manual"}'
 ```
@@ -272,7 +295,8 @@ Get historical price data with statistics.
 
 **Example**:
 ```bash
-curl "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/prices?source=scryfall&limit=20"
+curl -H "X-API-Key: your-api-key" \
+  "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/prices?source=scryfall&limit=20"
 ```
 
 **Response**:
@@ -324,24 +348,30 @@ curl "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/prices?source=scry
 
 ## Security Features
 
-### 1. Input Validation & Sanitization
+### 1. API Key Authentication
+- All `/api/v1/*` routes require valid API key in `X-API-Key` header
+- Multiple API keys supported via comma-separated `API_KEYS` environment variable
+- Timing-safe comparison to prevent timing attacks
+- Health check endpoint remains public for load balancer probes
+
+### 2. Input Validation & Sanitization
 - All inputs validated using express-validator
 - XSS prevention through input escaping
 - Length constraints enforced
 - Type validation
 
-### 2. Rate Limiting
+### 3. Rate Limiting
 - General API: 100 requests / 15 minutes per IP
 - Mutations (POST/PUT/PATCH/DELETE): 50 requests / 15 minutes
 - Health check: 60 requests / minute
 - Scryfall API: 8 requests / second (external API protection)
 
-### 3. SQL Injection Prevention
+### 4. SQL Injection Prevention
 - All queries use parameterized statements
 - No string concatenation for SQL queries
 - Database-level constraints as defense-in-depth
 
-### 4. Security Headers (Helmet.js)
+### 5. Security Headers (Helmet.js)
 - Content Security Policy (CSP)
 - HTTP Strict Transport Security (HSTS)
 - X-Frame-Options: DENY
@@ -349,12 +379,12 @@ curl "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/prices?source=scry
 - Referrer-Policy: strict-origin-when-cross-origin
 - Removes X-Powered-By header
 
-### 5. CORS Configuration
+### 6. CORS Configuration
 - Configurable allowed origins
 - Credentials support
 - Preflight caching
 
-### 6. External API Security
+### 7. External API Security
 - Scryfall API integration with rate limiting
 - In-memory caching (1 hour for cards, 5 minutes for prices)
 - Request timeout protection (10 seconds)
@@ -489,6 +519,7 @@ ORDER BY p.recorded_at DESC;
 | DB_USER | Database user | mtg_user |
 | DB_PASSWORD | Database password | (required) |
 | DB_NAME | Database name | mtg_price_tracker |
+| API_KEYS | Comma-separated list of valid API keys | (required) |
 | RATE_LIMIT_WINDOW_MS | Rate limit window | 900000 (15 min) |
 | RATE_LIMIT_MAX_REQUESTS | Max requests | 100 |
 | RATE_LIMIT_MUTATION_MAX | Max mutations | 50 |
@@ -500,13 +531,14 @@ ORDER BY p.recorded_at DESC;
 ```bash
 # Send 150 requests rapidly
 for i in {1..150}; do
-  curl http://localhost:3000/api/v1/mtg/cards &
+  curl -H "X-API-Key: your-api-key" http://localhost:3000/api/v1/mtg/cards &
 done
 ```
 
 ### Test SQL Injection Prevention
 ```bash
 curl -X POST "http://localhost:3000/api/v1/mtg/cards/Test'; DROP TABLE mtg_cards;--/prices" \
+  -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"price": 1.00, "source": "manual"}'
 ```
@@ -514,13 +546,14 @@ curl -X POST "http://localhost:3000/api/v1/mtg/cards/Test'; DROP TABLE mtg_cards
 ### Test XSS Sanitization
 ```bash
 curl -X POST "http://localhost:3000/api/v1/mtg/cards/<script>alert('XSS')</script>/prices" \
+  -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"price": 1.00, "source": "manual"}'
 ```
 
 ### Verify Security Headers
 ```bash
-curl -I http://localhost:3000/api/v1/mtg/cards
+curl -I -H "X-API-Key: your-api-key" http://localhost:3000/api/v1/mtg/cards
 ```
 
 ### Test MTG Price Tracking
@@ -528,6 +561,7 @@ curl -I http://localhost:3000/api/v1/mtg/cards
 **Fetch card price from Scryfall**:
 ```bash
 curl -X POST "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/fetch-price" \
+  -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"autoRecord": true}'
 ```
@@ -535,19 +569,22 @@ curl -X POST "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/fetch-pric
 **Record manual price**:
 ```bash
 curl -X POST "http://localhost:3000/api/v1/mtg/cards/Black%20Lotus/prices" \
+  -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"price": 25000.00, "source": "manual"}'
 ```
 
 **Get price history**:
 ```bash
-curl "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/prices?limit=10"
+curl -H "X-API-Key: your-api-key" \
+  "http://localhost:3000/api/v1/mtg/cards/Lightning%20Bolt/prices?limit=10"
 ```
 
 **Test Scryfall rate limiting** (should get 429 after 8 requests):
 ```bash
 for i in {1..15}; do
   curl -X POST "http://localhost:3000/api/v1/mtg/cards/Test/fetch-price" \
+    -H "X-API-Key: your-api-key" \
     -H "Content-Type: application/json" \
     -d '{"autoRecord": false}' &
 done

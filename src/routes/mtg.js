@@ -18,7 +18,7 @@ const {
 /**
  * @route   GET /api/v1/mtg/cards
  * @desc    Get all cards with latest prices
- * @access  Public
+ * @access  Protected (API key required)
  * @query   page, limit, sort, order
  */
 router.get('/cards', getAllCardsValidation, handleValidationErrors, mtgController.getAllCards);
@@ -26,7 +26,7 @@ router.get('/cards', getAllCardsValidation, handleValidationErrors, mtgControlle
 /**
  * @route   GET /api/v1/mtg/cards/:cardName/prices
  * @desc    Get price history for a card
- * @access  Public
+ * @access  Protected (API key required)
  * @query   source, start_date, end_date, page, limit
  */
 router.get(
@@ -39,7 +39,7 @@ router.get(
 /**
  * @route   POST /api/v1/mtg/cards/:cardName/prices
  * @desc    Record a price for a card (creates card if doesn't exist)
- * @access  Public
+ * @access  Protected (API key required)
  */
 router.post(
   '/cards/:cardName/prices',
@@ -51,7 +51,7 @@ router.post(
 /**
  * @route   POST /api/v1/mtg/cards/:cardName/fetch-price
  * @desc    Fetch current price from Scryfall API
- * @access  Public
+ * @access  Protected (API key required)
  * @body    autoRecord (optional boolean)
  */
 router.post(
