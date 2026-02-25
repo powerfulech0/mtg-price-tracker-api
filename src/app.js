@@ -9,6 +9,7 @@ const { generalLimiter, healthCheckLimiter } = require('./middleware/rateLimiter
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const apiRoutes = require('./routes');
 const logger = require('./utils/logger');
+const { version } = require('../package.json');
 
 /**
  * Express Application Configuration
@@ -40,6 +41,7 @@ app.get('/health', healthCheckLimiter, (req, res) => {
   res.json({
     success: true,
     message: 'API is healthy',
+    version: version,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
   });
