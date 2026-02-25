@@ -5,6 +5,9 @@ on:
     types: [opened, edited, synchronize, reopened]
     branches: [master, main]
 
+permissions:
+  pull-requests: read
+
 jobs:
   check-pr-title:
     runs-on: ubuntu-latest
