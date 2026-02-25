@@ -131,10 +131,7 @@ const recordPriceValidation = [
  * POST /api/v1/mtg/cards/:cardName/fetch-price
  * Fetch current price from Scryfall
  */
-const fetchPriceValidation = [
-  cardNameValidation,
-  autoRecordValidation,
-];
+const fetchPriceValidation = [cardNameValidation, autoRecordValidation];
 
 /**
  * GET /api/v1/mtg/cards/:cardName/prices
@@ -154,12 +151,7 @@ const getPriceHistoryValidation = [
  * GET /api/v1/mtg/cards
  * Get all cards with latest prices
  */
-const getAllCardsValidation = [
-  pageValidation,
-  limitValidation,
-  sortValidation,
-  orderValidation,
-];
+const getAllCardsValidation = [pageValidation, limitValidation, sortValidation, orderValidation];
 
 module.exports = {
   recordPriceValidation,

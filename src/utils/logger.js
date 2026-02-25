@@ -7,7 +7,7 @@ const LOG_LEVELS = {
   ERROR: 'ERROR',
   WARN: 'WARN',
   INFO: 'INFO',
-  DEBUG: 'DEBUG'
+  DEBUG: 'DEBUG',
 };
 
 const shouldLog = (level) => {
@@ -51,7 +51,7 @@ const logger = {
     if (shouldLog(LOG_LEVELS.DEBUG)) {
       console.log(formatLog(LOG_LEVELS.DEBUG, message, meta));
     }
-  }
+  },
 };
 
 module.exports = logger;

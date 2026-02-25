@@ -21,12 +21,7 @@ const {
  * @access  Public
  * @query   page, limit, sort, order
  */
-router.get(
-  '/cards',
-  getAllCardsValidation,
-  handleValidationErrors,
-  mtgController.getAllCards
-);
+router.get('/cards', getAllCardsValidation, handleValidationErrors, mtgController.getAllCards);
 
 /**
  * @route   GET /api/v1/mtg/cards/:cardName/prices

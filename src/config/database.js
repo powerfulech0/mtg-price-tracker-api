@@ -48,7 +48,7 @@ const query = async (text, params) => {
       logger.warn('Slow query detected', {
         duration: `${duration}ms`,
         query: text,
-        rows: res.rowCount
+        rows: res.rowCount,
       });
     }
 
@@ -57,7 +57,7 @@ const query = async (text, params) => {
     logger.error('Database query error', {
       error: err.message,
       query: text,
-      params
+      params,
     });
     throw err;
   }
@@ -66,5 +66,5 @@ const query = async (text, params) => {
 module.exports = {
   pool,
   query,
-  closePool
+  closePool,
 };

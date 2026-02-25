@@ -64,7 +64,7 @@ const helmetConfig = helmet({
  */
 const getCorsOptions = () => {
   const allowedOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
     : ['http://localhost:3000'];
 
   return {
