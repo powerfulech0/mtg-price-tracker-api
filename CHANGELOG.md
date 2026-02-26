@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.4.0...v1.5.0) (2026-02-26)
+
+
+### Features
+
+* Add AWS Terraform deployment infrastructure ([#18](https://github.com/powerfulech0/mtg-price-tracker-api/issues/18)) ([c096143](https://github.com/powerfulech0/mtg-price-tracker-api/commit/c0961430e883ac2d829441b8d2acd0a7d7f2a5e7))
+
 ## [1.4.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.3.0...v1.4.0) (2026-02-26)
 
 
