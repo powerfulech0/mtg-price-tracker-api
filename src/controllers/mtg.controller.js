@@ -14,7 +14,7 @@ const { AppError } = require('../middleware/errorHandler');
  */
 const recordCardPrice = async (req, res) => {
   const { cardName } = req.params;
-  const { price, source = 'manual', recorded_at } = req.body;
+  const { price, source = 'manual', recorded_at, description } = req.body;
 
   // Check if card exists
   let card = await mtgModel.getCardByName(cardName);
@@ -35,6 +35,7 @@ const recordCardPrice = async (req, res) => {
     price,
     source,
     recorded_at: recorded_at || new Date(),
+    description,
   });
 
   res.status(201).json({

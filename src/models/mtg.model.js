@@ -115,15 +115,15 @@ const getCardsCount = async () => {
  * @returns {Promise<Object>} Created price record
  */
 const createPriceRecord = async (priceData) => {
-  const { card_id, price, source, recorded_at } = priceData;
+  const { card_id, price, source, recorded_at, description } = priceData;
 
   const queryText = `
-    INSERT INTO mtg_price_history (card_id, price, source, recorded_at)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO mtg_price_history (card_id, price, source, recorded_at, description)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
   `;
 
-  const params = [card_id, price, source || 'manual', recorded_at || new Date()];
+  const params = [card_id, price, source || 'manual', recorded_at || new Date(), description || null];
 
   const result = await query(queryText, params);
   return result.rows[0];
