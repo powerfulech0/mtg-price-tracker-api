@@ -48,6 +48,7 @@ services:
       RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS}
       RATE_LIMIT_MUTATION_MAX: ${RATE_LIMIT_MUTATION_MAX}
       CORS_ORIGIN: ${CORS_ORIGIN}
+      API_KEYS: ${API_KEYS}
     ports:
       - "${PORT}:${PORT}"
     volumes:
