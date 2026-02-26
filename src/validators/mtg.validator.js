@@ -44,6 +44,12 @@ const recordedAtValidation = body('recorded_at')
     return true;
   });
 
+const descriptionValidation = body('description')
+  .optional()
+  .trim()
+  .isLength({ max: 500 })
+  .withMessage('Description must be at most 500 characters');
+
 const autoRecordValidation = body('autoRecord')
   .optional()
   .isBoolean()
@@ -125,6 +131,7 @@ const recordPriceValidation = [
   priceValidation,
   sourceValidation,
   recordedAtValidation,
+  descriptionValidation,
 ];
 
 /**

@@ -50,6 +50,7 @@ CREATE TABLE mtg_price_history (
     price NUMERIC(10,2) NOT NULL CHECK (price >= 0),
     source VARCHAR(50) NOT NULL DEFAULT 'manual'
         CHECK (source IN ('scryfall', 'tcgplayer', 'manual')),
+    description TEXT DEFAULT NULL,
     recorded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
