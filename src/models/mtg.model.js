@@ -123,7 +123,13 @@ const createPriceRecord = async (priceData) => {
     RETURNING *
   `;
 
-  const params = [card_id, price, source || 'manual', recorded_at || new Date(), description || null];
+  const params = [
+    card_id,
+    price,
+    source || 'manual',
+    recorded_at || new Date(),
+    description || null,
+  ];
 
   const result = await query(queryText, params);
   return result.rows[0];
