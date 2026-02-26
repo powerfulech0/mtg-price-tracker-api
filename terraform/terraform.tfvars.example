@@ -1,0 +1,22 @@
+# AWS Configuration
+aws_region    = "us-east-1"
+instance_type = "t3.micro"  # ~$8.50/mo, or use t4g.micro for ARM (~$6/mo)
+
+# Database Configuration
+db_password = "your-secure-database-password"
+
+# API Authentication
+api_keys = "your-api-key-1,your-api-key-2"
+
+# Docker Image
+docker_image = "ghcr.io/powerfulech0/mtg-price-tracker-api:latest"
+
+# SSH Access (restrict to your IP for security)
+# Find your IP: curl -s ifconfig.me
+ssh_allowed_cidr = "YOUR_IP_HERE/32"  # e.g., "203.0.113.50/32"
+
+# EC2 Key Pair (create in AWS Console first)
+key_pair_name = "mtg-price-tracker-key"
+
+# Storage
+ebs_volume_size = 20  # GB

@@ -1,0 +1,71 @@
+name: Deploy to EC2
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+  release:
+    types: [published]
+
+env:
+  DOCKER_IMAGE: ghcr.io/${{ github.repository }}:latest
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /opt/mtg-price-tracker
+
+            # Pull latest image
+            docker-compose pull app
+
+            # Restart app container with new image
+            docker-compose up -d --no-deps app
+
+            # Clean up old images
+            docker image prune -f
+
+            # Wait for health check
+            echo "Waiting for application to be healthy..."
+            sleep 10
+
+            # Verify deployment
+            if curl -sf http://localhost/health > /dev/null; then
+              echo "Deployment successful! Health check passed."
+            else
+              echo "Warning: Health check failed. Check application logs."
+              docker logs mtg-app --tail 50
+              exit 1
+            fi
+
+  verify:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    steps:
+      - name: Health Check
+        run: |
+          sleep 30
+          response=$(curl -sf http://${{ secrets.EC2_HOST }}/health || echo "failed")
+          if [ "$response" = "failed" ]; then
+            echo "Health check failed!"
+            exit 1
+          fi
+          echo "Health check passed: $response"

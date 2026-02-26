@@ -1,0 +1,60 @@
+# Production Docker Compose for EC2 Deployment
+# This file is for reference - the actual deployment uses the embedded
+# docker-compose.yml created by the EC2 user-data script
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: mtg-postgres
+    environment:
+      POSTGRES_USER: mtg_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: mtg_price_tracker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mtg_user -d mtg_price_tracker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - mtg_network
+
+  app:
+    image: ${DOCKER_IMAGE:-ghcr.io/grearden/mtg-price-tracker-api:latest}
+    container_name: mtg-app
+    ports:
+      - "80:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: mtg_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: mtg_price_tracker
+      API_KEYS: ${API_KEYS}
+      CORS_ORIGIN: "*"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mtg_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  mtg_network:
+    driver: bridge
