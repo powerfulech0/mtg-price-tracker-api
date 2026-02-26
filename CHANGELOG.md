@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.3.0...v1.4.0) (2026-02-26)
+
+
+### Features
+
+* Add optional description field for manual price recording ([#15](https://github.com/powerfulech0/mtg-price-tracker-api/issues/15)) ([d32048e](https://github.com/powerfulech0/mtg-price-tracker-api/commit/d32048e83361be8af6c31dd5067fda935825e1a4))
+
+
+### Bug Fixes
+
+* Add missing API_KEYS env var to docker-compose ([#16](https://github.com/powerfulech0/mtg-price-tracker-api/issues/16)) ([c00003b](https://github.com/powerfulech0/mtg-price-tracker-api/commit/c00003b5e82bee1416100497ccd2012583bb9681))
+
 ## [1.3.0](https://github.com/powerfulech0/mtg-price-tracker-api/compare/v1.2.0...v1.3.0) (2026-02-25)
 
 
